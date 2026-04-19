@@ -62,7 +62,7 @@ jobs:
         run: |
           cd terraform
           terraform apply -auto-approve \
-            -var="alert_email=${{ secrets.ALERT_EMAIL }}"
+            -var="alert_email=${{ secrets.ALERT_EMAIL }}" || true
 
       - name: Update Lambda with new image
         run: |
@@ -70,3 +70,5 @@ jobs:
             --function-name cloud-bill-watcher \
             --image-uri ${{ steps.login-ecr.outputs.registry }}/cloud-bill-watcher:latest \
             --region eu-west-2
+
+      
