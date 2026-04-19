@@ -42,9 +42,13 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/cloud-bill-watcher:latest
-          docker build -t $IMAGE_URI .
-          docker push $IMAGE_URI
+             IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/cloud-bill-watcher:latest
+             docker buildx create --use
+             docker buildx build \
+             --platform linux/amd64 \
+             --provenance=false \
+             -t $IMAGE_URI \
+             --push .
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
@@ -59,3 +63,10 @@ jobs:
           cd terraform
           terraform apply -auto-approve \
             -var="alert_email=${{ secrets.ALERT_EMAIL }}"
+
+      - name: Update Lambda with new image
+        run: |
+          aws lambda update-function-code \
+            --function-name cloud-bill-watcher \
+            --image-uri ${{ steps.login-ecr.outputs.registry }}/cloud-bill-watcher:latest \
+            --region eu-west-2
