@@ -18,7 +18,7 @@ Developers using AWS often forget to turn resources off or accidentally trigger 
 
 ## How it works
 
-![Architecture diagram](docs/architecture.png)
+![Architecture diagram](architecture.png)
 
 Every morning at **9am UTC**:
 
